@@ -8,13 +8,18 @@
 import Foundation
 
 public struct Commit: Entity {
-    private(set) public var id: String!
-    private(set) public var short_id: String!
-    public var title: String
-    public var author_name: String
-    public var author_email: String
-    public var created_at: Timestamp
-    public var message: String
-    public var parent_ids: [String]?
-    public var web_url: URL
+    public struct Info: Record {
+        public let message: String?
+        public let error_code: String?
+        public let dry_run: String?
+    }
+    public let id: String
+    public let short_id: String
+    public let title: String
+    public let author_name: String
+    public let author_email: String
+    public let created_at: Timestamp
+    public let message: String
+    public let parent_ids: [String]?
+    public let web_url: URL
 }

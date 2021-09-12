@@ -12,7 +12,7 @@ public struct User: Entity {
         case active
         case blocked
     }
-    public var id: Int!
+    public let id: Int
     public var state: State
     public var username: String
     public var name: String?

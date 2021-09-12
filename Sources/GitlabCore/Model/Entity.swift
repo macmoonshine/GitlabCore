@@ -8,5 +8,5 @@
 public protocol Entity: Record {
     associatedtype Id: Codable
     
-    var id: Id! { get }
+    var id: Id { get }
 }

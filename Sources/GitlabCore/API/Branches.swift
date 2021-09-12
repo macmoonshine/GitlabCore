@@ -10,17 +10,21 @@ public class Branches: API<Branch> {
     
     public init(gitlab: Gitlab, project: Project) {
         self.project = project
-        super.init(gitlab: gitlab, basePath: "/projects/\(project.id ?? 0)/repository/branches")
+        super.init(gitlab: gitlab, basePath: "/projects/\(project.id)/repository/branches")
     }
     
-    public func create(name: String, reference: String) -> Publisher {
+    open func create(name: String, reference: String) -> Publisher {
         let parameters: Parameters = [ "branch": name, "ref": reference ]
         
         return gitlab.send(path: basePath, parameters: parameters, method: "POST")
     }
 
-    public func delete(name: String) -> Publisher {
+    open func delete(name: String) -> Publisher {
         return gitlab.send(path: "\(basePath)/\(name)", method: "DELETE")
+    }
+    
+    open func deleteMerged() -> VoidPublisher {
+        return gitlab.send(path: "/projects/\(project.id)/repository/merged_branches", method: "DELETE")
     }
 }
 

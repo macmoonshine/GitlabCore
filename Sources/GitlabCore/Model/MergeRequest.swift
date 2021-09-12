@@ -12,10 +12,14 @@ public struct MergeRequest: Entity {
         case locked
         case merged
     }
+    public struct RebaseResponse: Record {
+        private(set) public var rebase_in_progress: Bool
+        private(set) public var merge_error: String?
+    }
     
-    private(set) public var id: Int!
-    private(set) public var iid: Int!
-    private(set) public var project_id: Int!
+    private(set) public var id: Int
+    private(set) public var iid: Int
+    private(set) public var project_id: Int
     public var state: State
     public var title: String
     public var author: User

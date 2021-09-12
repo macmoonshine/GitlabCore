@@ -16,7 +16,8 @@ public struct Project: Entity {
         case rebase_merge
         case ff
     }
-    public var id: Int!
+    
+    public let id: Int
     public var path: String
     public var path_with_namespace: String
     public var description: String?
@@ -26,4 +27,19 @@ public struct Project: Entity {
     public var created_at: Timestamp
     public var merge_method: MergeMethod
     public var topics: [String]
+    
+    public static func id(for project: Any) -> CustomStringConvertible? {
+        if let project = project as? Project {
+            return project.id
+        }
+        else if let id = project as? Int {
+            return id
+        }
+        else if let path = project as? String {
+            return path.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+        }
+        else {
+            return nil
+        }
+    }
 }
