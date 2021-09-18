@@ -1,15 +1,51 @@
+/*
+ Copyright 2021 macoonshine
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 import Foundation
 import Combine
 
+/**
+ provides and controls access to the Gitlab repository.
+ */
 open class Gitlab {
+    /**
+     defines possible errors when accessing the repository.
+     */
     public enum Error: Swift.Error {
+        /**
+         an URL cannot be created.
+         */
         case invalidURL
+        /**
+         server responded with a status code less than 200 or greater than 299. The enum value contains
+         the HTTP status code and message of the response.
+         */
         case badResponse(statusCode: Int, message: String)
+        /**
+         a required parameter could not be determined
+         */
         case parameterMissing(message: String)
     }
+    /// describes parameters for API calls.
     public typealias Parameters = [String:CustomStringConvertible]
  
     open class Decoder: JSONDecoder {
+        /**
+         returns the given data object if the requested type is `Data`, and decodes the otherwise.
+         */
         open override func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable {
             if type == Data.self, let data = data as? T {
                 return data
@@ -19,13 +55,10 @@ open class Gitlab {
             }
         }
     }
-    
-    public static let defaultScheme = "https"
-    
+        
     private let components: URLComponents
     private let token: String
     private(set) public var session: URLSession
-    private(set) public var queue: DispatchQueue?
     private(set) public var retryCount: Int
     
     public var url: URL {
@@ -37,7 +70,6 @@ open class Gitlab {
         self.components = components
         self.token = token
         self.session = .shared
-        self.queue = nil
         self.retryCount = 0
     }
     
@@ -45,7 +77,6 @@ open class Gitlab {
         self.components = other.components
         self.token = other.token
         self.session = other.session
-        self.queue = other.queue
         self.retryCount = other.retryCount
     }
     
@@ -167,35 +198,17 @@ open class Gitlab {
     }
     
     open func send<T>(request: URLRequest) -> AnyPublisher<T, Swift.Error> where T: Decodable {
-        let publisher = _send(request: request)
+        return _send(request: request)
             .decode(type: T.self, decoder: Decoder())
-
-        if let queue = queue {
-            return publisher
-                .receive(on: queue)
-                .eraseToAnyPublisher()
-        }
-        else {
-            return publisher
-                .eraseToAnyPublisher()
-        }
+            .eraseToAnyPublisher()
     }
     
     open func send(request: URLRequest) -> AnyPublisher<Void, Swift.Error> {
-        let publisher = _send(request: request)
+        return _send(request: request)
             .map {data -> Void in
                 return ()
             }
-        
-        if let queue = queue {
-            return publisher
-                .receive(on: queue)
-                .eraseToAnyPublisher()
-        }
-        else {
-            return publisher
-                .eraseToAnyPublisher()
-        }
+            .eraseToAnyPublisher()
     }
     
     open func use(session: URLSession) -> Self {
@@ -209,13 +222,6 @@ open class Gitlab {
         let gitlab = Self(from: self)
 
         gitlab.retryCount = count
-        return gitlab
-    }
-    
-    open func process(on: DispatchQueue) -> Self {
-        let gitlab = Self(from: self)
-
-        gitlab.queue = queue
         return gitlab
     }
 }
