@@ -1,104 +1,22 @@
-    import XCTest
-    import Combine
-    @testable import GitlabCore
-    
-    final class GitlabCoreTests: XCTestCase {
-        let gitlab = Gitlab("https://gitlab.com/api/v4", token: "xxx")!
-        var running = true
-        
-        public override func setUp() {
-            running = true
-        }
-        
-        func testListProjects() {
-            let c = gitlab.projects.list(parameters: [ "owned": true ])
-                .sink(receiveCompletion: { print($0) }) {
-                    print($0)
-                    self.running = false
-                }
-            
-            while running {
-            }
-            c.cancel()
-        }
-        
-        func testCreateBranch() {
-            let c = gitlab.projects.get(id: 29534978)
-                .flatMap {project -> Branches.Publisher in
-                    print("project:", project)
-                    return self.gitlab.branches(for: project)
-                        .create(name: "newTestBranch", reference: "main")
-                }
-                .sink(receiveCompletion: { print($0) }) {
-                    print("branches:", $0)
-                    self.running = false
-                }
-            
-            while running {
-            }
-            c.cancel()
-        }
-        
-        func testCreateMergeRequest() {
-            let c = gitlab.projects.list(parameters: [ "owned": true , "search": "test"])
-                .flatMap { projects -> MergeRequests.Publisher in
-                    print("create")
-                    return self.gitlab.mergeRequests(for: projects[0])
-                        .create(source: "main", target: "staging", title: "Merge main to staging")
-                }
-                .flatMap { mergeRequest -> MergeRequests.RebaseResponsePublisher in
-                    print("rebase")
-                    return self.gitlab.mergeRequests
-                        .rebase(mergeRequest: mergeRequest, skipCI: true)
-                }
-                .sink(receiveCompletion: { print($0) }) {
-                    print($0)
-                    self.running = false
-                }
-            
-            while running {
-            }
-            c.cancel()
-        }
-        func testAcceptMergeRequest() {
-            let c = gitlab.projects.list(parameters: [ "owned": true , "search": "test"])
-                .flatMap { projects -> MergeRequests.Publisher in
-                    return self.gitlab.mergeRequests(for: projects[0])
-                        .get(id: 5)
-                }
-                .flatMap { mergeRequest -> MergeRequests.Publisher in
-                    print("merge")
-                    return self.gitlab.mergeRequests
-                        .accept(mergeRequest: mergeRequest)
-                }
-                .sink(receiveCompletion: { print($0) }) {
-                    print($0)
-                    self.running = false
-                }
-            
-            while running {
-            }
-            c.cancel()
-        }
-        
-        func testDeleteMergeRequest() {
-            let c = gitlab.projects.list(parameters: [ "owned": true , "search": "test"])
-                .flatMap { projects -> MergeRequests.Publisher in
-                    return self.gitlab.mergeRequests(for: projects[0])
-                        .get(id: 7)
-                }
-                .flatMap { mergeRequest -> AnyPublisher<Void, Swift.Error> in
-                    print("merge")
-                    return self.gitlab.mergeRequests
-                        .delete(mergeRequest: mergeRequest)
-                }
-                .sink(receiveCompletion: { print($0) }) {
-                    print($0)
-                    self.running = false
-                }
-            
-            while running {
-            }
-            c.cancel()
-        }
-    }
+/*
+ Copyright 2021 macoonshine
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+import XCTest
+import Combine
+@testable import GitlabCore
+
+final class GitlabCoreTests: XCTestCase {
+}

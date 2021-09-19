@@ -2,14 +2,14 @@
 
 a small Swift library to the Gitlab API. The API are executed via `URLSession` and Combine Publishers.
 
-**Note:** Currently, GitlabCore only contains the most important basic functions for api access. However, further functions and object structs can easily be added. This can be done both outside and inside the library.
+**Note:** Currently, GitlabCore only contains the most important basic functions for API access. However, further functions and object structs can easily be added. This can be done both outside and inside the library.
 
 ## Structure
 
 Besides the [Gitlab](Sources/GitlabCore/Gitlab.swift) class, this library contains two main class hierarchies:
 
-* The api classes contain functions to access the Gitlab api.
-* Model classes describe objects which are returned by the api.
+* The API classes contain functions to access the Gitlab API.
+* Model classes describe objects which are returned by the API.
 
 ### Parameters
 
@@ -64,7 +64,7 @@ let cancellable = gitlab.projects.list([ "search": "MyProject"])
         // do something with first project in projects
     }
 ```
-This looks a little bit complicate to just making one api call. But for multiple, consecutive calls, the advantages of Combine come into play. For example, if you want to create a new branch in a project, you can do the following:
+This looks a little bit complicate to just making one API call. But for multiple, consecutive calls, the advantages of Combine come into play. For example, if you want to create a new branch in a project, you can do the following:
 
 ```
 let cancellable = gitlab.projects.list([ "search": "MyProject"])
