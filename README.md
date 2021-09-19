@@ -1,5 +1,5 @@
 # GitlabCore
-a small Swift library to the Gitlab API. The API are executed via `URLSession` and Combine Publishers.
+a small Swift library to the Gitlab API. The API are executed via `URLSession` and Combine [Publishers](https://developer.apple.com/documentation/combine/publisher).
 
 **Note:** Currently, GitlabCore only contains the most important basic functions for API access. However, further functions and object structs can easily be added. This can be done both outside and inside the library.
 
